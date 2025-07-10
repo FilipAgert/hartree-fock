@@ -5,7 +5,7 @@ module ho
     use geom
     implicit none
     private
-    public :: compute_laguerre, get_num_states_upto, get_states_upto, ho_state, modw, lnl, precompute_ho
+    public :: compute_laguerre, get_num_states_upto, get_states_upto, ho_state, modw, lnl, precompute_ho, E_ho
     real(r_kind), dimension(nquad, 0:(N_max/2), 0:N_max) :: Lnl !!Generalized laguerre polynomials in radial solution of 3D H.O. Solution
 
     type :: ho_state

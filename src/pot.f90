@@ -46,15 +46,24 @@ module pot !!module to create the two body interaction matrix
 
                         if(V_mat(cc,dd,aa,bb) < hg) then !transpose
                             V_mat(aa,bb,cc,dd) = V_mat(cc,dd,aa,bb)
-                            
+                        elseif(V_mat(cc,dd,bb,aa) < hg) then !transpose
+                            V_mat(aa,bb,cc,dd) = -V_mat(cc,dd,bb,aa)
+    
+
                         elseif(V_mat(bb,aa,dd,cc) < hg) then !switch particles
                             V_mat(aa,bb,cc,dd) = V_mat(bb,aa,dd,cc)
+                        elseif(V_mat(bb,aa,cc,dd) < hg) then !switch particles
+                            V_mat(aa,bb,cc,dd) = -V_mat(bb,aa,cc,dd)
 
                         elseif(V_mat(dd,cc,bb,aa) < hg) then !switch particles and transpose
                             V_mat(aa,bb,cc,dd) = V_mat(dd,cc,bb,aa)
+                        elseif(V_mat(dd,cc,aa,bb) < hg) then !switch particles and transpose
+                            V_mat(aa,bb,cc,dd) = -V_mat(dd,cc,aa,bb)
+                        elseif(V_mat(aa,bb,dd,cc) < hg) then !switch particles and transpose
+                            V_mat(aa,bb,cc,dd) = -V_mat(aa,bb,dd,cc)
                         else
                             
-                            V_mat(aa,bb,cc,dd) = delta_pot_mat_elem(s1,s2,s3,s4,v0)
+                            V_mat(aa,bb,cc,dd) = delta_pot_mat_elem(s1,s2,s3,s4,v0) - delta_pot_mat_elem(s1,s2,s4,s3,v0)
                         endif
 
                     end do

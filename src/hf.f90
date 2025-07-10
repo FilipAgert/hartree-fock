@@ -1,4 +1,4 @@
-module hartree
+module hf
     use constants
     implicit none
 
@@ -25,7 +25,7 @@ module hartree
             g_field = gamma_mat(Vmat, dmat) !!Self consistent field
             H = Tmat + g_field !Hamiltonian
             call diagonalize(E,D,H) !!Solve hartree-fock equations
-            write(*,'(I5,3x,F10.3)') iter, E(1)
+            write(*,'(I5,3x,F12.5)') iter, E(1)
 
             if(abs(E(1)-prevE) < 1e-6) then
                 write(*,'(A,i4,A)') "Converged after ", iter, " iterations"
@@ -123,4 +123,4 @@ module hartree
     end subroutine
 
 
-end module hartree
+end module hf

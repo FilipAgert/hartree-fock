@@ -30,7 +30,7 @@ $(DMOD)/integrate.mod: $(DSRC)/integrate.f90
 $(DMOD)/quadrule.mod: $(DSRC)/quadrule.f90
 $(DMOD)/pot.mod: $(DSRC)/pot.f90
 
-$(DSRC)/main.f90: $(DMOD)/constants.mod $(DMOD)/ho.mod 
+$(DSRC)/main.f90: $(DMOD)/constants.mod $(DMOD)/ho.mod $(DMOD)/hf.mod 
 $(DTEST)/run_all_tests.f90:$(DMOD)/test_geom.mod 
 $(DSRC)/ho.f90: $(DMOD)/constants.mod $(DMOD)/geom.mod
 $(DSRC)/hf.f90: $(DMOD)/constants.mod
