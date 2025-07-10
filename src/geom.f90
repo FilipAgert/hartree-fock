@@ -2,6 +2,12 @@ module geom !!some helper functions e.g. clebsh-gordan, factorial etc
     use constants, only: r_kind
     implicit none
 
+    private
+
+    INTERFACE cg
+        MODULE PROCEDURE cg_real,cg_int
+    END INTERFACE
+    public :: cg, fac, ffac
 
     contains
 
@@ -51,12 +57,12 @@ module geom !!some helper functions e.g. clebsh-gordan, factorial etc
     
         ! Clebsch-Gordan coefficient, REAL(8) parameters.
         
-        IMPLICIT REAL(8) (a-h, o-z)
+        IMPLICIT REAL(r_kind) (a-h, o-z)
         IMPLICIT integer (i-m)
     
-        REAL(8) :: cg 
+        REAL(r_kind) :: cg 
     
-        REAL(8), SAVE :: fc(170)
+        REAL(r_kind), SAVE :: fc(170)
         LOGICAL, SAVE :: first=.TRUE.
     
         IF (first) THEN
@@ -98,5 +104,24 @@ module geom !!some helper functions e.g. clebsh-gordan, factorial etc
         RETURN 
     
       END FUNCTION cg_real
+
+      FUNCTION cg_int(j1,m1,j2,m2,j) RESULT(cg)
+
+        ! Clebsch-Gordan coefficient, INTEGER parameters.
+    
+        IMPLICIT NONE
+    
+        INTEGER, INTENT(in) :: j1,m1,j2,m2,j
+        REAL(r_kind) :: cg,fj1,fm1,fj2,fm2,fj
+    
+        fj1 = REAL(j1,kind=8)
+        fm1 = REAL(m1,kind=8)
+        fj2 = REAL(j2,kind=8)
+        fm2 = REAL(m2,kind=8)
+        fj = REAL(j,kind=8)
+    
+        cg = cg_real(fj1,fm1,fj2,fm2,fj)
+    
+      END FUNCTION cg_int
 
 end module geom

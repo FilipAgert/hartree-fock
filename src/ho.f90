@@ -5,15 +5,15 @@ module ho
     use geom
     implicit none
     private
-    public :: compute_laguerre, get_num_states_upto, get_states_upto, ho_state, modw, lnl
-    real(r_kind), dimension(nquad, 0:N_max, 0:N_max) :: Lnl !!Generalized laguerre polynomials in radial solution of 3D H.O. Solution
+    public :: compute_laguerre, get_num_states_upto, get_states_upto, ho_state, modw, lnl, precompute_ho
+    real(r_kind), dimension(nquad, 0:(N_max/2), 0:N_max) :: Lnl !!Generalized laguerre polynomials in radial solution of 3D H.O. Solution
 
     type :: ho_state
         integer :: n,l,ml, ms
     end type
 
     contains
-    subroutine precompute()
+    subroutine precompute_ho()
         integer :: rr
         real(r_kind) :: eta, x(nquad)
         do rr = 1,nquad
@@ -26,12 +26,14 @@ module ho
 
     subroutine compute_laguerre(x)
         real(r_kind), dimension(nquad), intent(in) :: x !!For which x coordinates to evaluate gen. lag. poly at
-        integer :: N, l, q
-        Lnl = huge(r_kind)
+        integer :: N, l, q, nn
+        Lnl = huge(x)
         do N = 0, N_max
             do l = N, 0, -2
+                nn = (N -l) / 2
                 do q = 1,nquad
-                    Lnl(q,N,l) = lna(x(q), N, l+0.5_r_kind)
+                    Lnl(q,nn,l) = lna(x(q), nn, l+0.5_r_kind)
+                    
                 end do
             end do
         end do

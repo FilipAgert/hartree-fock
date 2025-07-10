@@ -8,7 +8,7 @@ module integrate
     real(r_kind), dimension(nquad) :: her_x, her_w, lag_x, lag_w, leg_x, leg_w
     contains
 
-    subroutine precompute()
+    subroutine precompute_gauss()
         !!64 point gaussian quadrature.
         call hermite_ek_compute(nquad,her_x,her_w)
         !!Gets weights and locations for where to evaluate 64 point integral. 
