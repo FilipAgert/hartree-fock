@@ -8,7 +8,7 @@ module constants
     ! ++++++++++++++++++++++++++++++ Harmonic oscillator parameters ++++++++++++++++++++++++++++++
     integer, parameter :: N_max = 4 !!maximum harmonic oscillator shell
     logical, parameter :: time_reversal_symmetry = .false.
-
+    integer, parameter :: num_part = 2
 
 
 
