@@ -1,9 +1,11 @@
 module ho
 
     use constants
+    use integrate, only: lag_x
+    use geom
     implicit none
     private
-    public :: compute_laguerre, get_num_states_upto, get_states_upto, ho_state
+    public :: compute_laguerre, get_num_states_upto, get_states_upto, ho_state, modw, lnl
     real(r_kind), dimension(nquad, 0:N_max, 0:N_max) :: Lnl !!Generalized laguerre polynomials in radial solution of 3D H.O. Solution
 
     type :: ho_state
@@ -11,9 +13,19 @@ module ho
     end type
 
     contains
+    subroutine precompute()
+        integer :: rr
+        real(r_kind) :: eta, x(nquad)
+        do rr = 1,nquad
+            eta = lag_x(rr)
+            x(rr) = eta*0.5_r_kind
+        end do
 
+        call compute_laguerre(x)
+    end subroutine
+    
     subroutine compute_laguerre(x)
-        real(r_kind), dimension(nquad), intent(in) :: x !!For which x coordinates to evlauate gen. lag. poly at
+        real(r_kind), dimension(nquad), intent(in) :: x !!For which x coordinates to evaluate gen. lag. poly at
         integer :: N, l, q
         Lnl = huge(r_kind)
         do N = 0, N_max
@@ -43,6 +55,27 @@ module ho
         endif
         res = lnas(n)
     end function
+
+    pure real(r_kind) elemental function lnamod(eta,n,l) result(res) !modified laguerre polynomial (radial part in eta)
+        real(r_kind), intent(in) :: eta
+        integer, intent(in) :: n
+        integer, intent(in) :: l
+        real(r_kind) :: const
+        const = modw(n,l)
+        res = const   * eta**((l+0.5_r_kind)/2.0_r_kind) *Lna(eta/2, n, l+0.5_r_kind)
+
+
+    end function
+    pure real(r_kind) elemental function modw(n,l) result(res) !modified laguerre polynomial constant term
+        integer, intent(in) :: n
+        integer, intent(in) :: l
+        real(r_kind) :: const
+        const = 2.0_r_kind**((n-0.5_r_kind)*0.5_r_kind) * sqrt(real(fac(n),r_kind))/sqrt(real(ffac(2*n+2*l+1),r_kind))
+        res = const   
+
+
+    end function
+
 
 
     pure real(r_kind) function E_ho(N, hbaromega)

@@ -16,18 +16,22 @@ CCL = gfortran -o
 
 
 # Objects
-OBJECTS = $(DOBJ)/constants.o $(DOBJ)/ho.o $(DOBJ)/integrate.o $(DOBJ)/quadrule.o  
+OBJECTS = $(DOBJ)/constants.o $(DOBJ)/ho.o $(DOBJ)/integrate.o $(DOBJ)/quadrule.o  $(DOBJ)/hf.o  
 TEST_OBJECTS = $(DOBJ)/
 MAIN_OBJ = $(DOBJ)/main.o
 VPATH = $(DSRC):$(DTEST):$(DSRC)/$(DSH)
 
 $(DMOD)/constants.mod: $(DSRC)/constants.f90
+$(DMOD)/geom.mod: $(DSRC)/geom.f90
 $(DMOD)/ho.mod: $(DSRC)/ho.f90
+$(DMOD)/hf.mod: $(DSRC)/hf.f90
 $(DMOD)/integrate.mod: $(DSRC)/integrate.f90
 $(DMOD)/quadrule.mod: $(DSRC)/quadrule.f90
 
 $(DSRC)/main.f90: $(DMOD)/constants.mod $(DMOD)/ho.mod 
-$(DSRC)/ho.f90: $(DMOD)/constants.mod
+$(DSRC)/ho.f90: $(DMOD)/constants.mod $(DMOD)/geom.mod
+$(DSRC)/hf.f90: $(DMOD)/constants.mod
+$(DSRC)/geom.f90: $(DMOD)/constants.mod
 $(DSRC)/integrate.f90: $(DMOD)/quadrule.mod $(DMOD)/constants.mod
 $(DSRC)/quadrule.f90: $(DMOD)/quadrule.mod
 # Default target

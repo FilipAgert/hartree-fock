@@ -3,6 +3,9 @@ module constants
     integer, parameter :: r_kind = 8
     integer, parameter :: nquad = 32 !!number of Gaussian quadrature integration points
 
+    integer, parameter :: verbose = 0 !!Level of printing.
+
+    integer, parameter :: maxiter = 50 !!maximum iterations of H.F. method before aborting
 
 
     ! ++++++++++++++++++++++++++++++ Harmonic oscillator parameters ++++++++++++++++++++++++++++++
