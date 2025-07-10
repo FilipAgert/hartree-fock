@@ -16,9 +16,10 @@ CCL = gfortran -o
 
 
 # Objects
-OBJECTS = $(DOBJ)/constants.o $(DOBJ)/ho.o $(DOBJ)/integrate.o $(DOBJ)/quadrule.o  $(DOBJ)/hf.o  
-TEST_OBJECTS = $(DOBJ)/
+OBJECTS = $(DOBJ)/constants.o $(DOBJ)/ho.o $(DOBJ)/integrate.o $(DOBJ)/quadrule.o  $(DOBJ)/hf.o  $(DOBJ)/geom.o
+TEST_OBJECTS = $(DOBJ)/test_geom.o $(DOBJ)/test_utils.o
 MAIN_OBJ = $(DOBJ)/main.o
+TEST_OBJ = $(DOBJ)/run_all_tests.o
 VPATH = $(DSRC):$(DTEST):$(DSRC)/$(DSH)
 
 $(DMOD)/constants.mod: $(DSRC)/constants.f90
@@ -29,15 +30,18 @@ $(DMOD)/integrate.mod: $(DSRC)/integrate.f90
 $(DMOD)/quadrule.mod: $(DSRC)/quadrule.f90
 
 $(DSRC)/main.f90: $(DMOD)/constants.mod $(DMOD)/ho.mod 
+$(DTEST)/run_all_tests.f90:$(DMOD)/test_geom.mod 
 $(DSRC)/ho.f90: $(DMOD)/constants.mod $(DMOD)/geom.mod
 $(DSRC)/hf.f90: $(DMOD)/constants.mod
 $(DSRC)/geom.f90: $(DMOD)/constants.mod
 $(DSRC)/integrate.f90: $(DMOD)/quadrule.mod $(DMOD)/constants.mod
-$(DSRC)/quadrule.f90: $(DMOD)/quadrule.mod
+
+
+$(DTEST)/test_geom.f90: $(DMOD)/geom.mod $(DMOD)/test_utils.mod
+$(DTEST)/test_utils.f90: $(DMOD)/constants.mod 
 # Default target
 all: main fit
 
-$(DOBJ)/main.o: $(DSRC)/main.f90 $(DOBJ)/constants.o 
 # Ensure required directories exist
 $(DOBJ) $(DEXE) $(DMOD) $(DTEST):
 	mkdir -p $@

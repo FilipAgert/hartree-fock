@@ -23,7 +23,7 @@ module ho
 
         call compute_laguerre(x)
     end subroutine
-    
+
     subroutine compute_laguerre(x)
         real(r_kind), dimension(nquad), intent(in) :: x !!For which x coordinates to evaluate gen. lag. poly at
         integer :: N, l, q
@@ -56,7 +56,7 @@ module ho
         res = lnas(n)
     end function
 
-    pure real(r_kind) elemental function lnamod(eta,n,l) result(res) !modified laguerre polynomial (radial part in eta)
+    real(r_kind) function lnamod(eta,n,l) result(res) !modified laguerre polynomial (radial part in eta)
         real(r_kind), intent(in) :: eta
         integer, intent(in) :: n
         integer, intent(in) :: l
@@ -66,7 +66,7 @@ module ho
 
 
     end function
-    pure real(r_kind) elemental function modw(n,l) result(res) !modified laguerre polynomial constant term
+    real(r_kind) function modw(n,l) result(res) !modified laguerre polynomial constant term
         integer, intent(in) :: n
         integer, intent(in) :: l
         real(r_kind) :: const

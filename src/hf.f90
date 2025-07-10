@@ -23,7 +23,7 @@ module hartree
         do iter = 1, maxiter
             dmat = dens(D(:,1:num_part)) !!Create new density matrix
             g_field = gamma_mat(Vmat, dmat) !!Self consistent field
-            H = Tmat + Vmat !Hamiltonian
+            H = Tmat + g_field !Hamiltonian
             call diagonalize(E,D,H) !!Solve hartree-fock equations
             write(*,'(I5,3x,F10.3)') iter, E(1)
 
