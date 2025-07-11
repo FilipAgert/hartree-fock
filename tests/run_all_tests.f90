@@ -1,5 +1,6 @@
 program run_tests
     use test_geom
+    use test_sort
     implicit none
   
     print *, "==============================="
@@ -7,6 +8,7 @@ program run_tests
     print *, "==============================="
   
     call run_tests_geom()
+    call run_tests_sort()
   
     print *, "==============================="
     print *, "         TESTING DONE"

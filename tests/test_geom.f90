@@ -30,7 +30,7 @@ module test_geom
         j = 1.0_r_kind
         m1 = 0.0_r_kind
         m2 = 0.0_r_kind
-        actual =  cg_real(j1,m1, j2,m2,j)
+        actual =  cg(j1,m1, j2,m2,j)
         pass = eq_r(expected, actual)
         if(.not. pass) then
             n_failed = n_failed + 1
@@ -46,7 +46,7 @@ module test_geom
         m1 = 0.0_r_kind
         m2 = 0.0_r_kind
         expected = sqrt(2.0/3.0)
-        actual = cg_real(j1,m1, j2,m2,j)
+        actual = cg(j1,m1, j2,m2,j)
         pass = eq_r(expected, actual)
         if(.not. pass) then
             n_failed = n_failed + 1
