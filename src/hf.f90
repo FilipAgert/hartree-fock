@@ -21,7 +21,7 @@ module hf
         write(*,'(A)') "Iter    E0 (MeV)"
         prevE = huge(prevE)
         do iter = 1, maxiter
-            dmat = dens(D(:,1:num_part)) !!Create new density matrix
+            dmat = dens(D) !!Create new density matrix
             g_field = gamma_mat(Vmat, dmat) !!Self consistent field
             H = Tmat + g_field !Hamiltonian
             call diagonalize(E,D,H) !!Solve hartree-fock equations

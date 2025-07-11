@@ -104,7 +104,7 @@ module ho
                 do mm = lb, l, 1
                     do ms = -1, 1, 2
                         idx = idx + 1
-                        !write(*,'(4I3)')ii,nn, l, mm
+                        write(*,'(4I3)')ii,nn, l, mm
                         states(idx) = ho_state(n=nn, l = l, ml = mm, ms = ms) 
                     end do
 

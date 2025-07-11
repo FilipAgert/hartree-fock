@@ -11,9 +11,9 @@ module geom !!some helper functions e.g. clebsh-gordan, factorial etc
 
     contains
 
-    integer(8) function fac(n) result(f)
+    real(r_kind) function fac(n) result(f)
         integer, intent(in) :: n
-        integer(8), save :: fc(0:169)
+        real(r_kind), save :: fc(0:169)
         logical, save :: first = .true.
         integer :: ii
         if(n < 0) THEN
@@ -21,8 +21,8 @@ module geom !!some helper functions e.g. clebsh-gordan, factorial etc
             stop
         endif
         IF (first) THEN
-            fc(0) = 1
-            fc(1) = 1
+            fc(0) = 1.0
+            fc(1) = 1.0
             DO ii = 2, 169
                fc(ii) = fc(ii-1)*ii
             END DO
@@ -32,17 +32,17 @@ module geom !!some helper functions e.g. clebsh-gordan, factorial etc
         f = fc(n)
     end function
 
-    integer(8) function ffac(n) result(f) !! double factorial (!!)
+    real(r_kind) function ffac(n) result(f) !! double factorial (!!)
             
         integer, intent(in) :: n
-        integer(8), save :: fc(0:169)
+        real(r_kind), save :: fc(0:169)
         logical, save :: first = .true.
         integer :: ii
 
         IF (first) THEN
-            fc(0) = 1
-            fc(1) = 1
-            fc(2) = 2
+            fc(0) = 1.0
+            fc(1) = 1.0
+            fc(2) = 2.0
             do ii = 3, 169
                 fc(ii) = fc(ii-2) * ii
             end do

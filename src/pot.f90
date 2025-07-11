@@ -8,12 +8,13 @@ module pot !!module to create the two body interaction matrix
     
 
     contains
-    function delta_pot_mat_elem(s1, s2, s3, s4, V0)result(elem) ! <s1,s2|V|s3,s4>
+    function delta_pot_mat_elem(s1, s2, s3, s4, V0, mass, hbaromega)result(elem) ! <s1,s2|V|s3,s4>
         type(ho_state), intent(in) :: s1,s2,s3,s4
         real(r_kind), intent(in) :: V0
-        real(r_kind) :: elem
-
+        real(r_kind) :: elem, mass, hbaromega, nu
         real(r_kind) :: radial, ang
+
+        nu = mass* hbaromega/(hbarc*hbarc)
 
 
         ang = angular_integral(s1%l, s1%ml, s2%l, s2%ml, s3%l, s3%ml, s4%l, s4%ml)
@@ -22,13 +23,13 @@ module pot !!module to create the two body interaction matrix
             elem = 0
         else
             !write(*,*) "ang:", ang
-            radial = radial_overlap_integral(s1%n, s1%l, s2%n, s2%l, s3%n, s3%l, s4%n, s4%l) !!radial part
+            radial = radial_overlap_integral(s1%n, s1%l, s2%n, s2%l, s3%n, s3%l, s4%n, s4%l, nu) !!radial part
             elem = ang*radial * (-V0)
         endif
     end function
 
-    function V_mat(V0, states) !!create matrix
-        real(r_kind), intent(in) :: V0
+    function V_mat(V0, states, mass, hbaromega) !!create matrix
+        real(r_kind), intent(in) :: V0, mass, hbaromega
         type(ho_state), intent(in) :: states(:)
         type(ho_state) :: s1,s2,s3,s4
         integer :: aa, bb, cc, dd
@@ -63,7 +64,7 @@ module pot !!module to create the two body interaction matrix
                             V_mat(aa,bb,cc,dd) = -V_mat(aa,bb,dd,cc)
                         else
                             
-                            V_mat(aa,bb,cc,dd) = delta_pot_mat_elem(s1,s2,s3,s4,v0) - delta_pot_mat_elem(s1,s2,s4,s3,v0)
+                            V_mat(aa,bb,cc,dd) = delta_pot_mat_elem(s1,s2,s3,s4,v0, mass, hbaromega) - delta_pot_mat_elem(s1,s2,s4,s3,v0, mass, hbaromega)
                         endif
 
                     end do
@@ -73,28 +74,38 @@ module pot !!module to create the two body interaction matrix
 
     end function
 
-
-
-    function radial_overlap_integral(n1,l1,n2,l2,n3,l3,n4,l4) result(val) !!Compute integral dr r^4 * R_1 R_2 R_3 R_4 from 0 to infty
+    subroutine qnbr_to_idx(idx,n1,l1,n2,l2,n3,l3,n4,l4)
         integer, intent(in) :: n1,l1,n2,l2,n3,l3, n4,l4 !!quantum numbers
-        real(r_kind) :: val, eta, w1,w2,w3,w4
+        integer, intent(out) :: idx
+        !Order quantum numbers in decreasing order n1 .ge. n2 .ge. n3 .ge. n4
+        
+
+
+    end subroutine
+
+    function radial_overlap_integral(n1,l1,n2,l2,n3,l3,n4,l4, nu) result(val) !!Compute integral dr r^4 * R_1 R_2 R_3 R_4 from 0 to infty
+        integer, intent(in) :: n1,l1,n2,l2,n3,l3, n4,l4 !!quantum numbers
+        real(r_kind) :: val, eta, w1,w2,w3,w4, nu
         integer :: rr
+        real(r_kind), dimension(N_max/2, N_max, N_max/2, N_max, N_max/2, N_max, N_max/2, N_max), save :: mat
         !write(*,*) "Radial integral:"
-        w1 = modw(n1,l1)
-        w2 = modw(n2,l2)
-        w3 = modw(n3,l3)
-        w4 = modw(n4,l4)
+        w1 = 2.0_r_kind**(n1/2.0) * sqrt(fac(n1)/ffac(2*n1+2*l1+1))
+        w2 = 2.0_r_kind**(n2/2.0) * sqrt(fac(n2)/ffac(2*n2+2*l2+1))
+        w3 = 2.0_r_kind**(n3/2.0) * sqrt(fac(n3)/ffac(2*n3+2*l3+1))
+        w4 = 2.0_r_kind**(n4/2.0) * sqrt(fac(n4)/ffac(2*n4+2*l4+1))
         !write(*,*) w1, w2, w3, w4
         val = 0
         do rr = 1, nquad 
             eta = lag_x(rr)
+            !if(n1 .ge. 4.or. n2 .ge. 4 .or. n3 .ge. 4 .or. n4 .ge. 4)            write(*,*) n1, n2, n3 ,n4
+
             if(lnl(rr,n1,l1) > 1e6 .or. lnl(rr,n2,l2) > 1e6.or.lnl(rr,n3,l3) > 1e6 .or. lnl(rr,n4,l4)> 1e6 ) then
                 write(*,*) "Err: lnl out of bounds:", lnl(rr,n1,l1), lnl(rr,n2,l2),lnl(rr,n3,l3),lnl(rr,n4,l4)
                 stop
             endif
-            val = val + lag_w(rr) * eta**((l1+l2+l3+l4)*0.5_r_kind) * eta * lnl(rr,n1,l1) * lnl(rr,n2,l2) * lnl(rr,n3,l3) * lnl(rr,n4,l4) 
+            val = val + lag_w(rr) * eta**((l1+l2+l3+l4)*0.5_r_kind) * eta**(1.5_r_kind) * lnl(rr,n1,l1) * lnl(rr,n2,l2) * lnl(rr,n3,l3) * lnl(rr,n4,l4) 
         end do
-        val = val * w1 * w2 * w3 * w4 / pi
+        val = val * w1 * w2 * w3 * w4 *2.0 * sqrt(nu)/ pi
     end function
 
     real(r_kind) function angular_integral(l1,m1,l2,m2,l3,m3,l4,m4) result(val) !!Compute integrl Y1* Y2* Y3 Y4 over all angles
