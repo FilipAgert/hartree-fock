@@ -3,6 +3,7 @@ module pot !!module to create the two body interaction matrix
     use ho, only: ho_state, modw, lnl
     use integrate
     use geom
+    use sort
 
     implicit none
     
@@ -78,16 +79,45 @@ module pot !!module to create the two body interaction matrix
         integer, intent(in) :: n1,l1,n2,l2,n3,l3, n4,l4 !!quantum numbers
         integer, intent(out) :: idx
         !Order quantum numbers in decreasing order n1 .ge. n2 .ge. n3 .ge. n4
-        
+        integer, dimension(4) :: ns, ls
+        integer(8) :: num_n_config, num_l_config, num_config, idx1, idx2
+        ns = [n1,n2,n3,n4]
+        ls = [l1,l2,l3,l4]
+        call sort_by(ns,ls) !!sorts by ns and then ls
+        num_n_config = choose(N_max/2 + 4, 4) !!How many combinations of n1,n2,n3,n4?
+        num_l_config = (N_max+1)**4
+        num_config = num_n_config*num_l_config
 
+        idx1 = choose(n1+3,4) + choose(n2+2,3) + choose(n3+1,2) + choose(n4,1)
 
+        idx2 = l1*((N_max+1)**3) + l2 * (N_max+1)**2 + l3*(N_max+1) + l4
+
+        idx = idx1 * num_l_config + idx2
     end subroutine
 
     function radial_overlap_integral(n1,l1,n2,l2,n3,l3,n4,l4, nu) result(val) !!Compute integral dr r^4 * R_1 R_2 R_3 R_4 from 0 to infty
         integer, intent(in) :: n1,l1,n2,l2,n3,l3, n4,l4 !!quantum numbers
         real(r_kind) :: val, eta, w1,w2,w3,w4, nu
-        integer :: rr
-        real(r_kind), dimension(N_max/2, N_max, N_max/2, N_max, N_max/2, N_max, N_max/2, N_max), save :: mat
+        integer :: rr, num_n, num_l, num_c, idx
+        real(r_kind), dimension(:), allocatable, save :: mat
+        logical,save, allocatable :: first_time(:)
+        logical, save :: first = .true.
+        if(first) then
+            num_n = choose(N_max/2 + 4, 4) !!How many combinations of n1,n2,n3,n4?
+            num_l= (N_max+1)**4
+            num_c = num_n*num_l
+            allocate(first_time(0:num_c-1), mat(0:num_c-1))
+            first_time = .true.
+            first = .false.
+        endif
+        call qnbr_to_idx(idx,n1,l1,n2,l2,n3,l3,n4,l4)
+        if(first_time(idx)) then
+
+
+        else
+            
+        endif
+
         !write(*,*) "Radial integral:"
         w1 = 2.0_r_kind**(n1/2.0) * sqrt(fac(n1)/ffac(2*n1+2*l1+1))
         w2 = 2.0_r_kind**(n2/2.0) * sqrt(fac(n2)/ffac(2*n2+2*l2+1))
