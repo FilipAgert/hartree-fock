@@ -7,9 +7,35 @@ module geom !!some helper functions e.g. clebsh-gordan, factorial etc
     INTERFACE cg
         MODULE PROCEDURE cg_real,cg_int
     END INTERFACE
-    public :: cg, fac, ffac
+    public :: cg, fac, ffac, choose
 
     contains
+
+    integer(8) function choose(a,b) !! calculate a choose b
+        integer :: a,b
+        choose = facint(a)/(facint(b)*facint(a-b))
+    end function
+
+    integer(8) function facint(n) result(f)
+        integer, intent(in) :: n
+        integer(8) , save :: fc(0:169)
+        logical, save :: first = .true.
+        integer :: ii
+        if(n < 0) THEN
+            write(*,*) "error: negative argument for factorial"
+            stop
+        endif
+        IF (first) THEN
+            fc(0) = 1
+            fc(1) = 1
+            DO ii = 2, 169
+               fc(ii) = fc(ii-1)*ii
+            END DO
+            first = .FALSE.
+        END IF
+
+        f = fc(n)
+    end function
 
     real(r_kind) function fac(n) result(f)
         integer, intent(in) :: n
